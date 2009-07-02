@@ -1,0 +1,8 @@
+usage: appsalesdn.py [options]
+Options and arguments:
+-h     : print this help message and exit (also --help)
+-a uid : your apple id (also --appleId)
+-p pwd : your password (also --password)
+-o dir : directory where download file is stored, default is the current working directory (also --outputDirectory)
+-u     : unzip download file, default is on (also --unzip)
+-v     : verbose output, default is off (also --verbose)
