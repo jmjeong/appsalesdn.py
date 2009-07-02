@@ -76,7 +76,7 @@ try:
 	import BeautifulSoup
 except ImportError:
 	BeautifulSoup = None
-	raise Exception, "Beautiful Soap is required"
+	raise Exception, "BeautifulSoup module is required"
 
 # The class ReportOptions defines a structure for passing
 # report options to the download routine. The expected
