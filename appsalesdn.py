@@ -5,7 +5,11 @@
 # iTune Connect Sales Reports Downloader(Dailys, Weekly, and Monthly reports)
 # Copyright 2009 Jaemok Jeong(jmjeong@gmail.com)
 #
-# Version 1.0
+# Version 1.1
+#
+# ChangeLog
+#
+# + fixes latest iTunes Connect changes
 #
 # Changes from appdailysales.py(Copyright 2008 Kirby Turner)
 #   - Download all available reports including weekly and monthly report.
@@ -258,8 +262,19 @@ def downloadFile(options):
 	urlWebsite = urlBase % '/cgi-bin/WebObjects/Piano.woa'
 	urlHandle = opener.open(urlWebsite)
 	html = urlHandle.read()
-	match = re.search('"appleConnectForm" action="(.*)"', html)
-	urlActionLogin = urlBase % match.group(1)
+
+	if options.verbose == True:
+		print 'using BeautifulSoap for HTML parsing'
+
+	soup = BeautifulSoup.BeautifulSoup( html )
+	form = soup.find( 'form', attrs={'method': 'post' } )
+	try:
+		urlActionLogin = urlBase % form['action']
+	except TypeError:   
+		raise Exception, "Check Login id and Password again"
+        
+	# match = re.search('"appleConnectForm" action="(.*)"', html)
+	# urlActionLogin = urlBase % match.group(1)
 
 	# Login to iTunes Connect web site and go to the sales 
 	# report page, get the form action url and form fields.	 
@@ -267,14 +282,13 @@ def downloadFile(options):
 	# page that redirects to the static URL. Best guess here 
 	# is that the server is setting some session variables 
 	# or something.
-	webFormLoginData = urllib.urlencode({'theAccountName':options.appleId, 'theAccountPW':options.password})
+
+	webFormLoginData = urllib.urlencode({'theAccountName':options.appleId, 'theAccountPW':options.password, '1.Continue.x':'0', '1.Continue.y':'0'})
 	urlHandle = opener.open(urlActionLogin, webFormLoginData)
 	html = urlHandle.read()
 
-	# Get the form field names needed to download the report.
-	if options.verbose == True:
-		print 'using BeautifulSoap for HTML parsing'
 
+	# Get the form field names needed to download the report.
 	soup = BeautifulSoup.BeautifulSoup( html )
 	form = soup.find( 'form', attrs={'name': 'frmVendorPage' } )
 
